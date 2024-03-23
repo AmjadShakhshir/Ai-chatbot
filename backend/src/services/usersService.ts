@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 
 import UserRepo from "../models/UserModel.js";
+import { createToken } from "../utils/token-manager.js";
 
 const findAll = async () => {
   const users = await UserRepo.find();
@@ -37,7 +38,9 @@ const logIn = async ({ email, password }) => {
       error: "Incorrect password",
     };
   }
-  return user;
+
+  const token = createToken(user._id.toString(), user.email, "7d");
+  return { user, token };
 };
 
 export default {
