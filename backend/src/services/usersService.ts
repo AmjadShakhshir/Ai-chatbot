@@ -5,13 +5,19 @@ const findAll = async () => {
   return users;
 };
 
-const signUp = async (user) => {
-  const newUser = new UserRepo(user);
+const findByEmail = async (email: string) => {
+  const user = await UserRepo.findOne({ email });
+  return user;
+};
+
+const signUp = async ({ name, email, password }) => {
+  const newUser = new UserRepo({ name, email, password });
   await newUser.save();
   return newUser;
 };
 
 export default {
   findAll,
+  findByEmail,
   signUp,
 };
