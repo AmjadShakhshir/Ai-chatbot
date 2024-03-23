@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import usersService from "../../services/usersService.js";
 import { ApiError } from "../../middlewares/errors/ApiError.js";
+import { COOKIE_NAME } from "../../utils/constants.js";
 
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
@@ -15,7 +16,24 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       next(ApiError.badRequest("User does not exist"));
       return;
     }
-    res.status(200).json({ message: "OK", user });
+
+    res.clearCookie(COOKIE_NAME, {
+      path: "/",
+      domain: "localhost",
+      httpOnly: true,
+      signed: true,
+    });
+
+    const expires = new Date();
+    expires.setDate(expires.getDate() + 7);
+    res.cookie(COOKIE_NAME, user.token, {
+      path: "/",
+      domain: "localhost",
+      httpOnly: true,
+      expires,
+      signed: true,
+    });
+    return res.status(200).json({ message: "OK", user });
   } catch (error) {
     console.log(error);
     next(ApiError.internal("Something went wrong"));
