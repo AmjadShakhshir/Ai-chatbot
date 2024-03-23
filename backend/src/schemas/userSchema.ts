@@ -19,6 +19,7 @@ export const userBodySchema = z.object({
     .max(20, {
       message: "Must be at most 20 characters long",
     }),
+  chats: z.array(z.string()).default([]),
 });
 
 export const userSchema = z.object({
