@@ -1,3 +1,5 @@
+import bcrypt from "bcrypt";
+
 import UserRepo from "../models/UserModel.js";
 
 const findAll = async () => {
@@ -10,14 +12,37 @@ const findByEmail = async (email: string) => {
   return user;
 };
 
-const signUp = async ({ name, email, password }) => {
-  const newUser = new UserRepo({ name, email, password });
-  await newUser.save();
-  return newUser;
+const signUp = async (name: string, email: string, password: string) => {
+  const hashedPaswword = bcrypt.hashSync(password, 10);
+  const existingUser = await findByEmail(email);
+
+  if (existingUser) {
+    return null;
+  }
+  const user = await UserRepo.create({ name, email, password: hashedPaswword });
+  await user.save();
+  return user;
+};
+
+const logIn = async ({ email, password }) => {
+  const user = await UserRepo.findOne({ email });
+  if (!user) {
+    return {
+      error: "User does not exist",
+    };
+  }
+  const passwordMatch = await bcrypt.compareSync(password, user.password);
+  if (!passwordMatch) {
+    return {
+      error: "Incorrect password",
+    };
+  }
+  return user;
 };
 
 export default {
   findAll,
   findByEmail,
   signUp,
+  logIn,
 };
