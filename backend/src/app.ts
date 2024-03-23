@@ -2,6 +2,8 @@ import express from "express";
 import { config } from "dotenv";
 import morgan from "morgan";
 import appRouter from "./routes/index.js";
+import { apiErrorHandler } from "./middlewares/apiErrorHandler.js";
+import { routeNotFound } from "./middlewares/routeNotFound.js";
 
 config();
 
@@ -13,5 +15,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
 app.use("/api/v1", appRouter);
+
+app.use(apiErrorHandler);
+app.use(routeNotFound);
 
 export default app;
