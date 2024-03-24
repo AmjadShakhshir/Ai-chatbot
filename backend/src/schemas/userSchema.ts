@@ -22,6 +22,28 @@ export const userBodySchema = z.object({
   chats: z.array(z.string()).default([]),
 });
 
+export const loginBodySchema = z.object({
+  email: z
+    .string({
+      required_error: "Email is required",
+    })
+    .email(),
+  password: z
+    .string({
+      required_error: "Password is required",
+    })
+    .min(6, {
+      message: "Must be at least 6 characters long",
+    })
+    .max(20, {
+      message: "Must be at most 20 characters long",
+    }),
+});
+
 export const userSchema = z.object({
   body: userBodySchema,
+});
+
+export const loginSchema = z.object({
+  body: loginBodySchema,
 });
