@@ -22,7 +22,7 @@ const signUp = async (name: string, email: string, password: string) => {
   }
   const user = await UserRepo.create({ name, email, password: hashedPaswword });
   await user.save();
-  return user;
+  return { name: user.name, email: user.email };
 };
 
 const logIn = async ({ email, password }) => {
@@ -40,7 +40,7 @@ const logIn = async ({ email, password }) => {
   }
 
   const token = createToken(user._id.toString(), user.email, "7d");
-  return { user, token };
+  return { name: user.name, email: user.email, token };
 };
 
 export default {
