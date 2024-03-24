@@ -33,7 +33,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       expires,
       signed: true,
     });
-    return res.status(200).json({ message: "OK", user });
+    return res.status(200).json({ message: "OK", name: user.name, email: user.email });
   } catch (error) {
     console.log(error);
     next(ApiError.internal("Something went wrong"));
