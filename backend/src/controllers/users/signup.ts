@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import usersService from "../../services/usersService.js";
 import { ApiError } from "../../middlewares/errors/ApiError.js";
 
-export async function userSignup(req: Request, res: Response, next: NextFunction) {
+export async function signup(req: Request, res: Response, next: NextFunction) {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
