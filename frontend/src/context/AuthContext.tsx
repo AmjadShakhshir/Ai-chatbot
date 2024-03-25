@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { checkAuthStatus, loginUser } from "../helpers/api-communicator";
+import { checkAuthStatus, loginUser, signupUser } from "../helpers/api-communicator";
 
 type User = {
   email: string;
@@ -37,7 +37,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
   const signup = async (email: string, username: string, password: string) => {
-    // fetch to the backend to signup
+    const data = await signupUser(username, email, password);
+    if (data) {
+      setUser({ email: data.email, name: data.name });
+    }
   };
   const logout = async () => {
     // fetch to the backend to logout
