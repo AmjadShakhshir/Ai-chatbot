@@ -56,3 +56,16 @@ export const sendChatRequest = async (message: string) => {
     throw new Error("Unable to send chat request");
   }
 };
+
+export const getUserChats = async () => {
+  try {
+    const response = await axios.get("/chat/all-chats");
+    if (response.status !== 200) {
+      throw new Error("Unable to authenticate user");
+    }
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    throw new Error("Unable to send chat request");
+  }
+};
