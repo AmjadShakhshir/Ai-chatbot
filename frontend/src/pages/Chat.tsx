@@ -1,38 +1,31 @@
-import { Avatar, Box, Button, Typography } from "@mui/material";
+import { Avatar, Box, Button, IconButton, Typography } from "@mui/material";
 import { red } from "@mui/material/colors";
 
 import { useAuth } from "../context/AuthContext";
+import ChatItem from "../components/chat/ChatItem";
+import { IoMdSend } from "react-icons/io";
+import { useRef, useState } from "react";
+import { sendChatRequest } from "../helpers/api-communicator";
 
-const chatMessages = [
-  {
-    role: "user",
-    content: "Hello, can you provide today's weather forecast?",
-  },
-  {
-    role: "assistant",
-    content: "Sure! In which city are you interested?",
-  },
-  {
-    role: "user",
-    content: "I'd like to know the weather in New York.",
-  },
-  {
-    role: "assistant",
-    content: "The weather in New York today will be mostly sunny with a high of 75°F (24°C) and a low of 59°F (15°C).",
-  },
-  {
-    role: "user",
-    content: "That's great, thank you!",
-  },
-  {
-    role: "assistant",
-    content: "You're welcome! Let me know if there's anything else I can help with.",
-  },
-];
-
+type Message = {
+  content: string;
+  role: "user" | "assistant";
+};
 const Chat = () => {
   const auth = useAuth();
-
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const handleSubmit = async () => {
+    const content = inputRef.current?.value;
+    if (inputRef && inputRef.current) {
+      inputRef.current.value = "";
+    }
+    if (!content) return;
+    const newChatMessages: Message = { content, role: "user" };
+    setChatMessages((prev) => [...prev, newChatMessages]);
+    const chatData = await sendChatRequest(content);
+    setChatMessages([...chatData.chats]);
+  };
   return (
     <Box
       sx={{
@@ -103,10 +96,44 @@ const Chat = () => {
             scrollBehavior: "smooth",
           }}
         >
-          {chatMessages.map((chat) => (
-            <div>{chat.content}</div>
+          {chatMessages.map((chat, index) => (
+            <ChatItem key={index} content={chat.content} role={chat.role} />
           ))}
         </Box>
+        <div
+          style={{
+            width: "100%",
+            padding: "20px",
+            borderRadius: 8,
+            backgroundColor: "rgb(17,29,39)",
+            display: "flex",
+            marginRight: "auto",
+          }}
+        >
+          {" "}
+          <input
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSubmit();
+              }
+            }}
+            ref={inputRef}
+            type="text"
+            placeholder="Type a message..."
+            style={{
+              width: "100%",
+              backgroundColor: "transparent",
+              padding: "10px",
+              border: "none",
+              outline: "none",
+              color: "white",
+              fontSize: "1.2em",
+            }}
+          />
+          <IconButton onClick={handleSubmit} sx={{ color: "white", ml: "auto" }}>
+            <IoMdSend />
+          </IconButton>
+        </div>
       </Box>
     </Box>
   );
