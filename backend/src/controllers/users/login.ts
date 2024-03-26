@@ -11,11 +11,6 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       next(ApiError.badRequest("Missing required fields"));
       return;
     }
-    const user = await usersService.logIn({ email, password });
-    if (!user) {
-      next(ApiError.badRequest("User does not exist"));
-      return;
-    }
 
     res.clearCookie(COOKIE_NAME, {
       path: "/",
@@ -23,6 +18,12 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       httpOnly: true,
       signed: true,
     });
+
+    const user = await usersService.logIn({ email, password });
+    if (!user) {
+      next(ApiError.badRequest("User does not exist"));
+      return;
+    }
 
     const expires = new Date();
     expires.setDate(expires.getDate() + 7);

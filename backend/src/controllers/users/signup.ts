@@ -15,6 +15,7 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
       next(ApiError.badRequest("User already exists"));
       return;
     }
+
     const user = await usersService.signUp(name, email, password);
     res.status(201).json({ user, message: "User created successfully" });
   } catch (error) {
