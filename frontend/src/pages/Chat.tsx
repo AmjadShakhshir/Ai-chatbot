@@ -4,8 +4,10 @@ import { red } from "@mui/material/colors";
 import { useAuth } from "../context/AuthContext";
 import ChatItem from "../components/chat/ChatItem";
 import { IoMdSend } from "react-icons/io";
-import { useRef, useState } from "react";
-import { sendChatRequest } from "../helpers/api-communicator";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { deleteUserChats, getUserChats, sendChatRequest } from "../helpers/api-communicator";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 type Message = {
   content: string;
@@ -13,8 +15,10 @@ type Message = {
 };
 const Chat = () => {
   const auth = useAuth();
+  const navigate = useNavigate();
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+
   const handleSubmit = async () => {
     const content = inputRef.current?.value;
     if (inputRef && inputRef.current) {
@@ -26,6 +30,44 @@ const Chat = () => {
     const chatData = await sendChatRequest(content);
     setChatMessages([...chatData.chats]);
   };
+
+  const handleDelteChat = async () => {
+    try {
+      toast.loading("Deleting Chats Data...", { id: "deletechats" });
+      await deleteUserChats()
+        .then(() => {
+          setChatMessages([]);
+          toast.success("Successfully deleted chats", { id: "deletechats" });
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Failed to delete chats data", { id: "deletechats" });
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (auth?.isLoggedIn && auth.user) {
+      toast.loading("Loading Chats Data...", { id: "loadchats" });
+      getUserChats()
+        .then((data) => {
+          setChatMessages([...data.chats]);
+          toast.success("Successfully loaded chats", { id: "loadchats" });
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Failed to load chats data", { id: "loadchats" });
+        });
+    }
+  }, [auth]);
+
+  useEffect(() => {
+    if (!auth?.user) {
+      return navigate("/login");
+    }
+  }, [auth, navigate]);
   return (
     <Box
       sx={{
@@ -58,12 +100,13 @@ const Chat = () => {
               fontWeight: 700,
             }}
           >
-            {auth?.user?.name[0]}
-            {auth?.user?.name && auth.user.name.includes(" ") ? auth.user.name.split(" ")[1][0] : ""}
+            {auth?.user?.name && auth.user.name[0]}
+            {auth?.user?.name && auth.user.name.includes(" ") ? auth.user.name.split(" ")[1]?.[0] : ""}
           </Avatar>
           <Typography sx={{ mx: "auto", fontFamily: "work sans" }}>You are talking to a ChatBOT</Typography>
           <Typography sx={{ mx: "auto", fontFamily: "work sans", my: 4, p: 3 }}>You can ask some questions related to knowledge, technology, or any other general topics. But avoid sharing personal information.</Typography>
           <Button
+            onClick={handleDelteChat}
             sx={{
               width: "200px",
               my: "auto",
