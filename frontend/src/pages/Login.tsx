@@ -4,9 +4,12 @@ import toast from "react-hot-toast";
 
 import CustomizedInput from "../components/shared/CustomizedInput";
 import { useAuth } from "../context/AuthContext";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const auth = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -22,6 +25,13 @@ const Login = () => {
       toast.error("Invalid credentials", { id: "login" });
     }
   };
+
+  useEffect(() => {
+    if (auth?.isLoggedIn) {
+      toast.success("Already Logged in", { id: "login" });
+    }
+    navigate("/chat");
+  }, [auth, navigate]);
 
   return (
     <Box width={"100%"} height={"100%"} display="flex" flex={1}>
