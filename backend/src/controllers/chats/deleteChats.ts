@@ -5,7 +5,6 @@ import { ApiError } from "../../middlewares/errors/ApiError.js";
 export const deleteChats = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await chatsService.deleteAllChats(res.locals.jwtData.id);
-
     if (!user) {
       return res.status(401).json({ message: "User Not registered OR Token malfunctioned" });
     }
