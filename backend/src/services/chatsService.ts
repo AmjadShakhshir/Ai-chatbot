@@ -24,7 +24,7 @@ const generateChat = async (message: string, id: string) => {
 
 const deleteAllChats = async (id: string) => {
   const user = await UserRepo.findOne({ _id: id });
-  user.chats.remove();
+  user.chats.pull({});
   await user.save();
   return user;
 };
