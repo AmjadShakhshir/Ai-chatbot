@@ -7,11 +7,13 @@ import { loginSchema, userSchema } from "../schemas/userSchema.js";
 import { login } from "../controllers/users/login.js";
 import { verifyToken } from "../utils/token-manager.js";
 import { verifyUser } from "../controllers/users/verifyUser.js";
+import { logout } from "../controllers/users/logout.js";
 
 const userRoutes = Router();
 
 userRoutes.get("/", getAllUsers);
 userRoutes.get("/auth-status", verifyToken, verifyUser);
+userRoutes.get("/logout", verifyToken, logout);
 userRoutes.post("/signup", validate(userSchema), signup);
 userRoutes.post("/login", validate(loginSchema), login);
 
