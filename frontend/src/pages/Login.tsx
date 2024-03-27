@@ -27,11 +27,10 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (auth?.isLoggedIn) {
-      toast.success("Already Logged in", { id: "login" });
+    if (auth?.user) {
+      return navigate("/chat");
     }
-    navigate("/chat");
-  }, [auth, navigate]);
+  }, [auth]);
 
   return (
     <Box width={"100%"} height={"100%"} display="flex" flex={1}>
