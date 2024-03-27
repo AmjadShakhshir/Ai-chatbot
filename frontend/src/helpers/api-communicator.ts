@@ -15,8 +15,8 @@ export const loginUser = async (email: string, password: string) => {
 
 export const signupUser = async (email: string, name: string, password: string) => {
   try {
-    const response = await axios.post(`/users/signup`, { email, name, password });
-    if (response.status !== 200) {
+    const response = await axios.post(`/users/signup`, { name, email, password });
+    if (response.status !== 201) {
       throw new Error("Failed to signup");
     }
     const data = await response.data;
