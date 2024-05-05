@@ -1,6 +1,5 @@
 import { ChatCompletionRequestMessage, OpenAIApi } from "openai";
 import UserRepo from "../models/UserModel.js";
-import { configureOpenAI } from "../config/openai-config.js";
 
 const generateChat = async (message: string, id: string) => {
   const user = await UserRepo.findById(id);
@@ -11,8 +10,7 @@ const generateChat = async (message: string, id: string) => {
   chats.push({ role: "user", content: message });
   user.chats.push({ role: "user", content: message });
 
-  const config = configureOpenAI();
-  const openai = new OpenAIApi(config);
+  const openai = new OpenAIApi();
   const chatResponse = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: chats,
